@@ -1,5 +1,5 @@
-requirejs-stache
-================
+requirejs-mustache
+==================
 
 This is an AMD loader for [Mustache Logic-less templates](http://mustache.github.com) which can be used as a drop-in replacement to [millermedeiros/requirejs-hogan-plugin](http://github.com/millermedeiros/requirejs-hogan-plugin/blob/master/hgn.js)
 
