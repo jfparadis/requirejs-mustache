@@ -8,7 +8,7 @@ This is an AMD loader for [Mustache Logic-less templates](http://mustache.github
 
 - Uses an external MustacheJS engine (referenced by the Mustache team).
 
-- Uses the official `text`` loader plugin maintained by the RequireJS team.
+- Uses the official ``text`` loader plugin maintained by the RequireJS team.
 
 - You don't have to specify the template file extension (``.html is assumed``, but this is configurable).
 
