@@ -31,43 +31,44 @@
 /*jslint nomen: true */
 /*global define: false */
 
-(function () {
+define(['text', 'Mustache'], function (text, Mustache) {
     'use strict';
+
     var sourceMap = {},
         buildMap = {},
-        buildTemplateSource = "define('{pluginName}!{moduleName}', ['Mustache'], function (Mustache) { return Mustache.compile('{source}'); });\n";
+        buildTemplateSource = "define('{pluginName}!{moduleName}', ['Mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
 
-    define(['text', 'Mustache'], function (text, Mustache) {
-        return {
-            version: '0.0.1',
+    return {
+        version: '0.0.1',
 
-            load: function (moduleName, parentRequire, onload, config) {
-                if (buildMap[moduleName]) {
-                    onload(buildMap[moduleName]);
+        load: function (moduleName, parentRequire, onload, config) {
+            if (buildMap[moduleName]) {
+                onload(buildMap[moduleName]);
 
-                } else {
-                    var ext = (config.stache && config.stache.extension) || '.html';
-                    text.load(moduleName + ext, parentRequire, function (source) {
-                        if (config.isBuild) {
-                            sourceMap[moduleName] = source;
-                        }
+            } else {
+                var ext = (config.stache && config.stache.extension) || '.html';
+                text.load(moduleName + ext, parentRequire, function (source) {
+                    if (config.isBuild) {
+                        sourceMap[moduleName] = source;
+                        onload();
+                    } else {
                         buildMap[moduleName] = Mustache.compile(source);
                         onload(buildMap[moduleName]);
-                    }, config);
-                }
-            },
-
-            write: function (pluginName, moduleName, write, config) {
-                var source = sourceMap[moduleName];
-                if (source) {
-                    source = text.jsEscape(source);
-                    write.asModule(pluginName + '!' + moduleName,
-                        buildTemplateSource
-                        .replace('{pluginName}', pluginName)
-                        .replace('{moduleName}', moduleName)
-                        .replace('{source}', source));
-                }
+                    }
+                }, config);
             }
-        };
-    });
-}());
+        },
+
+        write: function (pluginName, moduleName, write, config) {
+            var source = sourceMap[moduleName],
+                content = source && text.jsEscape(source);
+            if (content) {
+                write.asModule(pluginName + '!' + moduleName,
+                    buildTemplateSource
+                    .replace('{pluginName}', pluginName)
+                    .replace('{moduleName}', moduleName)
+                    .replace('{content}', content));
+            }
+        }
+    };
+});
