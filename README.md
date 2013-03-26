@@ -1,2 +1,134 @@
-requirejs-mustache
-==================
+requirejs-tpl
+=============
+
+This is an AMD loader for [Mustache Logic-less templates](http://mustache.github.com) which can be used as a drop-in replacement to [millermedeiros/requirejs-hogan-plugin](http://github.com/millermedeiros/requirejs-hogan-plugin/blob/master/hgn.js)
+
+
+## Overview
+
+- Uses an external MustacheJS engine (referenced by the Mustache team).
+
+- Uses the official `text`` loader plugin maintained by the RequireJS team.
+
+- You don't have to specify the template file extension (``.html is assumed``, but this is configurable).
+
+Notes:
+
+- The text library can be removed at build-time using ``r.js``.
+
+- The extension ``.html`` is assmumed, and this makes loading templates similar to loading JavaScript files with RequireJS (all extensions are assumned).
+
+## Installation
+
+Download MustacheJS and RequireJS-text:
+
+- [MustacheJS](http://github.com/janl/mustache.js)
+
+- [RequireJS-text](http://requirejs.org/docs/download.html#text)
+
+Typically, you would place them in a ``scripts/libs`` folder then create a ``scripts/main.js`` file to alias them (no need to shim Mustache):
+
+```
+require.config({
+  paths: {
+    Mustache: 'libs/mustache',
+    text: 'libs/text'
+    tpl: 'libs/tpl'
+  }
+});
+```
+
+## Usage
+
+Specify the plugin using ``stache!`` followed by the template file:
+
+```
+require(['backbone', 'stache!template'], function (Backbone, template) {
+  return Backbone.View.extend({
+    initialize: function(){
+      this.render();
+    },
+    render: function(){
+      this.$el.html(template({message: 'hello'}));
+  });
+});
+```
+
+## Customization
+
+You can specify the template file extension in your main.js:
+
+```
+require.config({
+
+  // some paths and shims
+
+  stache: {
+    extension: '.tpl' // default = '.html'
+  }
+});
+```
+
+## Optimization
+
+This plugin is compatible with [r.js](http://requirejs.org/docs/optimization.html).
+
+Optimization brings three benefits to a project:
+
+- The templates are bundled within your code and not dynamically loaded which reduces the number of HTTP requests.
+
+- The templates are partially pre-compiled before being bundled which reduces the work the client has to do.
+
+The most important build options are:
+
+- ``stubModules: ['text', 'tpl']``
+
+The list of modules to stub out in the optimized file, i.e. the code is replaced with ``define('module',{});`` by ``r.js``
+
+- ``removeCombined: true``
+
+Removes from the output folder the files combined into a build.
+
+## Example
+
+Copy the ``example`` and ``example-build`` folders to your web server (``text`` is not compatible with the ``file://`` protocol and opening ``index.hml`` directly from your browser will not work).
+
+Alternatively, you can use Connect and NodeJS to spin a web server:
+
+- Install ``connect`` using ``npm`` and launch the server with NodeJS:
+
+```
+  $ npm install -g connect
+  $ node server.js
+```
+
+Go to http://localhost:9000/example. Your browser should load:
+
+- index.html
+
+- require.js
+
+- main.js
+
+- stache.js
+
+- mustache.js
+
+- text.js
+
+- message.html
+
+Go to http://localhost:9000/example-build. Your browser should load:
+
+- index.html
+
+- require.js
+
+- main.js
+
+
+
+
+
+
+
