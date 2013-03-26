@@ -1,5 +1,5 @@
-requirejs-tpl
-=============
+requirejs-stache
+================
 
 This is an AMD loader for [Mustache Logic-less templates](http://mustache.github.com) which can be used as a drop-in replacement to [millermedeiros/requirejs-hogan-plugin](http://github.com/millermedeiros/requirejs-hogan-plugin/blob/master/hgn.js)
 
@@ -33,7 +33,7 @@ require.config({
   paths: {
     Mustache: 'libs/mustache',
     text: 'libs/text'
-    tpl: 'libs/tpl'
+    stache: 'libs/stache'
   }
 });
 ```
@@ -64,7 +64,7 @@ require.config({
   // some paths and shims
 
   stache: {
-    extension: '.tpl' // default = '.html'
+    extension: '.stache' // default = '.html'
   }
 });
 ```
@@ -81,7 +81,7 @@ Optimization brings three benefits to a project:
 
 The most important build options are:
 
-- ``stubModules: ['text', 'tpl']``
+- ``stubModules: ['text', 'stache']``
 
 The list of modules to stub out in the optimized file, i.e. the code is replaced with ``define('module',{});`` by ``r.js``
 
