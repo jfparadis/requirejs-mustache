@@ -24,7 +24,7 @@
 // Configuration: (optional)
 //   require.config({
 //     stache: {
-//       extension: '.mustache' // default = '.html'
+//       extension: '.stache' // default = '.html'
 //     }
 //   });
 
@@ -46,7 +46,7 @@
                     onload(buildMap[moduleName]);
 
                 } else {
-                    var ext = (config.tpl && config.tpl.extension) || '.html';
+                    var ext = (config.stache && config.stache.extension) || '.html';
                     text.load(moduleName + ext, parentRequire, function (source) {
                         if (config.isBuild) {
                             sourceMap[moduleName] = source;
