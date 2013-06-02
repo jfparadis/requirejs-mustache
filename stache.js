@@ -31,7 +31,7 @@
 /*jslint nomen: true */
 /*global define: false */
 
-define(['text', 'Mustache'], function (text, Mustache) {
+define(['text', 'mustache'], function (text, Mustache) {
     'use strict';
 
     var sourceMap = {},
@@ -46,7 +46,7 @@ define(['text', 'Mustache'], function (text, Mustache) {
                 onload(buildMap[moduleName]);
 
             } else {
-                var ext = (config.stache && config.stache.extension) || '.html';
+                var ext = (config.config.stache && config.config.stache.extension) || '.html';
                 text.load(moduleName + ext, parentRequire, function (source) {
                     if (config.isBuild) {
                         sourceMap[moduleName] = source;
