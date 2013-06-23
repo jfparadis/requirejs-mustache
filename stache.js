@@ -31,12 +31,12 @@
 /*jslint nomen: true */
 /*global define: false */
 
-define(['text', 'Mustache'], function (text, Mustache) {
+define(['text', 'mustache'], function (text, Mustache) {
     'use strict';
 
     var sourceMap = {},
         buildMap = {},
-        buildTemplateSource = "define('{pluginName}!{moduleName}', ['Mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
+        buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
 
     return {
         version: '0.0.1',
@@ -46,7 +46,7 @@ define(['text', 'Mustache'], function (text, Mustache) {
                 onload(buildMap[moduleName]);
 
             } else {
-                var ext = (config.stache && config.stache.extension) || '.html';
+                var ext = (config.config.stache && config.config.stache.extension) || '.html';
                 text.load(moduleName + ext, parentRequire, function (source) {
                     if (config.isBuild) {
                         sourceMap[moduleName] = source;
