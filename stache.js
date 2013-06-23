@@ -36,7 +36,7 @@ define(['text', 'mustache'], function (text, Mustache) {
 
     var sourceMap = {},
         buildMap = {},
-        buildTemplateSource = "define('{pluginName}!{moduleName}', ['Mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
+        buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
 
     return {
         version: '0.0.1',
