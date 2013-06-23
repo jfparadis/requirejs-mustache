@@ -1,0 +1,14 @@
+{
+  "name": "requirejs-mustache",
+  "version": "0.0.0",
+  "main": "stache.js",
+  "dependencies": {
+    "mustache": ">= 0.1",
+    "requirejs-text": ">= 2.0.0"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ]
+}
