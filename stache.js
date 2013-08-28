@@ -47,7 +47,8 @@ define(['text', 'Mustache'], function (text, Mustache) {
 
             } else {
                 var ext = (config.stache && config.stache.extension) || '.html';
-                text.load(moduleName + ext, parentRequire, function (source) {
+                var path = (config.stache && config.stache.path) || '';
+                text.load(path + moduleName + ext, parentRequire, function (source) {
                     if (config.isBuild) {
                         sourceMap[moduleName] = source;
                         onload();
