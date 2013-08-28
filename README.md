@@ -64,7 +64,8 @@ require.config({
   // some paths and shims
 
   stache: {
-    extension: '.stache' // default = '.html'
+    extension: '.stache', // default = '.html'
+    path: '/templates/' // default = ''
   }
 });
 ```
