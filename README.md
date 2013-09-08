@@ -18,6 +18,14 @@ Notes:
 
 - The extension ``.html`` is assmumed, and this makes loading templates similar to loading JavaScript files with RequireJS (all extensions are assumned).
 
+## Changelog
+
+0.0.1 Initial version
+0.0.2 Various updates:
+- Add template path option to stache.js (thanks drewrichards)
+- Updated require.js to 2.1.8 , and r.js to 2.1.8
+- Updated handlebar.js to 0.7.2
+
 ## Installation
 
 Download MustacheJS and RequireJS-text:

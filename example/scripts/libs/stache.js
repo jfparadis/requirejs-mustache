@@ -6,7 +6,7 @@
 // Using Mustache Logic-less templates at http://mustache.github.com
 // Using and RequireJS text.js at http://requirejs.org/docs/api.html#text
 // @author JF Paradis
-// @version 0.0.1
+// @version 0.0.2
 //
 // Released under the MIT license
 //
@@ -39,7 +39,7 @@ define(['text', 'Mustache'], function (text, Mustache) {
         buildTemplateSource = "define('{pluginName}!{moduleName}', ['Mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
 
     return {
-        version: '0.0.1',
+        version: '0.0.2',
 
         load: function (moduleName, parentRequire, onload, config) {
             if (buildMap[moduleName]) {
@@ -47,7 +47,8 @@ define(['text', 'Mustache'], function (text, Mustache) {
 
             } else {
                 var ext = (config.stache && config.stache.extension) || '.html';
-                text.load(moduleName + ext, parentRequire, function (source) {
+                var path = (config.stache && config.stache.path) || '';
+                text.load(path + moduleName + ext, parentRequire, function (source) {
                     if (config.isBuild) {
                         sourceMap[moduleName] = source;
                         onload();
