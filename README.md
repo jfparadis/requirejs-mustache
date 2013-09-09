@@ -108,10 +108,11 @@ Install ``connect`` using ``npm`` and launch the server with NodeJS:
 
 ```
   $ npm install -g connect
+  $ npm link connect
   $ node server.js
 ```
 
-Go to http://localhost:9000/example. Your browser should load:
+Go to [http://localhost:9000/example](http://localhost:9000/example). Your browser should load:
 
 - index.html
 - require.js
@@ -121,7 +122,7 @@ Go to http://localhost:9000/example. Your browser should load:
 - text.js
 - message.html
 
-Go to http://localhost:9000/example-build. Your browser should load:
+Go to [http://localhost:9000/example-build](http://localhost:9000/example-build). Your browser should load:
 
 - index.html
 - require.js
