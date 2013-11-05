@@ -24,6 +24,9 @@ Notes:
 - Updated require.js to 2.1.8 , and r.js to 2.1.8
 - Updated handlebar.js to 0.7.2
 
+0.0.3 Merged pull request from Rafael Bodill:
+- Converted library to lowercase
+
 ## Installation
 
 Download MustacheJS and RequireJS-text:
