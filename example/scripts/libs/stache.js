@@ -36,7 +36,7 @@ define(['text', 'mustache'], function (text, Mustache) {
 
     var sourceMap = {},
         buildMap = {},
-        buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache'], function (Mustache) { return Mustache.compile('{content}'); });\n";
+        buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache'], function (Mustache) { var template = '{content}'; Mustache.parse( template ); return function( view ) { return Mustache.render( template, view ); } });\n";
 
     return {
         version: '0.0.3',
@@ -53,7 +53,10 @@ define(['text', 'mustache'], function (text, Mustache) {
                         sourceMap[moduleName] = source;
                         onload();
                     } else {
-                        buildMap[moduleName] = Mustache.compile(source);
+                        Mustache.parse(source);
+                        buildMap[moduleName] = function( view ) {
+                            return Mustache.render( source, view ); 
+                        };
                         onload(buildMap[moduleName]);
                     }
                 }, config);
