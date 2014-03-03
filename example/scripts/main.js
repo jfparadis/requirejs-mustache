@@ -1,7 +1,7 @@
 require({
     paths: {
         templates: '../templates',
-        Mustache: 'libs/mustache',
+        mustache: 'libs/mustache',
         text: 'libs/text',
         stache: 'libs/stache'
     }
