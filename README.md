@@ -36,7 +36,7 @@ Download MustacheJS and RequireJS-text:
 
 Typically, you would place them in a ``scripts/libs`` folder then create a ``scripts/main.js`` file to alias them (no need to shim Mustache):
 
-```
+```js
 require.config({
   paths: {
     Mustache: 'libs/mustache',
@@ -44,13 +44,13 @@ require.config({
     stache: 'libs/stache'
   }
 });
-```>
+```
 
 ## Usage
 
 Specify the plugin using ``stache!`` followed by the template file:
 
-```
+```js
 require(['backbone', 'stache!template'], function (Backbone, template) {
   return Backbone.View.extend({
     initialize: function(){
@@ -66,7 +66,7 @@ require(['backbone', 'stache!template'], function (Backbone, template) {
 
 You can specify the template file extension in your main.js:
 
-```
+```js
 require.config({
 
   // some paths and shims
@@ -109,7 +109,7 @@ Alternatively, you can use Connect and NodeJS to spin a web server:
 
 Install ``connect`` using ``npm`` and launch the server with NodeJS:
 
-```
+```sh
   $ npm install -g connect
   $ npm link connect
   $ node server.js
