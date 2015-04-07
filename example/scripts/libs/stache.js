@@ -35,13 +35,25 @@ define(['text', 'mustache'], function (text, Mustache) {
     'use strict';
 
     var sourceMap = {},
-        buildMap = {},
-        buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache'], function (Mustache) { var template = '{content}'; Mustache.parse( template ); return function( view ) { return Mustache.render( template, view ); } });\n";
+        buildMap = {}, 
+        partialsMap = {};
+
+    function parse(source){
+        var partials = {};
+        Mustache.parse(source).forEach(function partialLooker(element) {
+            if(element[0]=== '>'){
+                partials[element[1]] = true;
+            }else if(Array.isArray(element[4])){
+                element[4].forEach(partialLooker);
+            } 
+        });
+        return Object.keys(partials);
+    }
 
     return {
         version: '0.0.3',
 
-        load: function (moduleName, parentRequire, onload, config) {
+        load: function load(moduleName, parentRequire, onload, config) {
             if (buildMap[moduleName]) {
                 onload(buildMap[moduleName]);
 
@@ -49,29 +61,73 @@ define(['text', 'mustache'], function (text, Mustache) {
                 var ext = (config.stache && config.stache.extension) || '.html';
                 var path = (config.stache && config.stache.path) || '';
                 text.load(path + moduleName + ext, parentRequire, function (source) {
+                    sourceMap[moduleName] = source;
+                    var partials = parse(source);
                     if (config.isBuild) {
-                        sourceMap[moduleName] = source;
-                        onload();
+                        partialsMap[moduleName] = partials;
+                        (function loadWait(partials){
+                            if(partials.length){
+                                var partialName = partials[0];
+                                if(partialsMap[partialName]){
+                                    loadWait(partials.slice(1));
+                                } else {
+                                    load(partialName, parentRequire, function(_) {loadWait(partials.slice(1));}, config);
+                                }
+                            } else {
+                                onload();
+                            }
+                        })(partials);
                     } else {
-                        Mustache.parse(source);
-                        buildMap[moduleName] = function( view ) {
-                            return Mustache.render( source, view ); 
+                        buildMap[moduleName] = function build( view ) {
+                            return Array.isArray(view)? view.map(build): Mustache.render( source, view, sourceMap ); 
                         };
-                        onload(buildMap[moduleName]);
+                        (function loadWait(partials){
+                            if(partials.length){
+                                var partialName = partials[0];
+                                if(buildMap[partialName]){
+                                    loadWait(partials.slice(1));
+                                } else {
+                                    load(partialName, parentRequire, function(_) {loadWait(partials.slice(1));}, config);
+                                }
+                            } else {
+                                onload(buildMap[moduleName]);
+                            }
+                        })(partials);
                     }
                 }, config);
             }
         },
 
-        write: function (pluginName, moduleName, write, config) {
+        write: function writer(pluginName, moduleName, write, config) {
             var source = sourceMap[moduleName],
                 content = source && text.jsEscape(source);
             if (content) {
-                write.asModule(pluginName + '!' + moduleName,
-                    buildTemplateSource
-                    .replace('{pluginName}', pluginName)
-                    .replace('{moduleName}', moduleName)
-                    .replace('{content}', content));
+                sourceMap[moduleName] = null;
+                var dependencies = partialsMap[moduleName];
+                if(dependencies.length){
+                    dependencies.forEach(function(partialName){
+                        writer(pluginName, partialName, write, config);
+                    });
+                    var partials = dependencies.map(function(partial) {return '"'+pluginName+'!'+partial+'"';}).join(',');
+                    var params = dependencies.map(function(partial) {return partial;}).join(',');
+                    var array = dependencies.map(function(partial) {return partial+':'+partial+'.source';}).join(',');
+                    var buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache',{partials}], function (Mustache,{params}) { var template = '{content}', dependencies = {{array}}; Mustache.parse( template ); function build( view ) { return Array.isArray(view)? view.map(build): Mustache.render( template, view, dependencies );}; build.source=template; return build; });\n";
+                    write.asModule(pluginName + '!' + moduleName,
+                        buildTemplateSource
+                        .replace('{pluginName}', pluginName)
+                        .replace('{moduleName}', moduleName)
+                        .replace('{partials}', partials)
+                        .replace('{params}', params)
+                        .replace('{array}', array)
+                        .replace('{content}', content));
+                } else {
+                    var buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache'], function (Mustache) { var template = '{content}'; Mustache.parse( template ); function build( view ) { return Array.isArray(view)? view.map(build): Mustache.render( template, view );};build.source=template; return build; });\n";
+                    write.asModule(pluginName + '!' + moduleName,
+                        buildTemplateSource
+                        .replace('{pluginName}', pluginName)
+                        .replace('{moduleName}', moduleName)
+                        .replace('{content}', content));
+                }
             }
         }
     };
