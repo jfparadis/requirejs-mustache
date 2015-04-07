@@ -108,9 +108,9 @@ define(['text', 'mustache'], function (text, Mustache) {
                     dependencies.forEach(function(partialName){
                         writer(pluginName, partialName, write, config);
                     });
-                    var partials = dependencies.map(function(partial) {return '"'+pluginName+'!'+partial+'"';}).join(',');
-                    var params = dependencies.map(function(partial) {return partial;}).join(',');
-                    var array = dependencies.map(function(partial) {return partial+':'+partial+'.source';}).join(',');
+                    var partials = dependencies.map(function(partial) {return text.jsEscape('"'+pluginName+'!'+partial+'"');}).join(',');
+                    var params = dependencies.map(function(partial, i) {return 'partial_'+i;}).join(',');
+                    var array = dependencies.map(function(partial, i) {return '"'+text.jsEscape(partial)+'":'+'partial_'+i+'.source';}).join(',');
                     var buildTemplateSource = "define('{pluginName}!{moduleName}', ['mustache',{partials}], function (Mustache,{params}) { var template = '{content}', dependencies = {{array}}; Mustache.parse( template ); function build( view ) { return Array.isArray(view)? view.map(build): Mustache.render( template, view, dependencies );}; build.source=template; return build; });\n";
                     write.asModule(pluginName + '!' + moduleName,
                         buildTemplateSource
