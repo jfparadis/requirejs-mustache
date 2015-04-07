@@ -35,7 +35,8 @@ define(['text', 'mustache'], function (text, Mustache) {
     'use strict';
 
     var sourceMap = {},
-        buildMap = {};
+        buildMap = {}, 
+        partialsMap = {};
 
     function parse(source){
         var partials = {};
@@ -61,40 +62,52 @@ define(['text', 'mustache'], function (text, Mustache) {
                 var path = (config.stache && config.stache.path) || '';
                 text.load(path + moduleName + ext, parentRequire, function (source) {
                     sourceMap[moduleName] = source;
+                    var partials = parse(source);
                     if (config.isBuild) {
-                        onload();
+                        partialsMap[moduleName] = partials;
+                        (function loadWait(partials){
+                            if(partials.length){
+                                var partialName = partials[0];
+                                if(partialsMap[partialName]){
+                                    loadWait(partials.slice(1));
+                                } else {
+                                    load(partialName, parentRequire, function(_) {loadWait(partials.slice(1));}, config);
+                                }
+                            } else {
+                                onload();
+                            }
+                        })(partials);
                     } else {
-                        var partials = parse(source);
                         buildMap[moduleName] = function build( view ) {
                             return Array.isArray(view)? view.map(build): Mustache.render( source, view, sourceMap ); 
                         };
-                        if(partials.length){
-                            (function loadWait(partials){
-                                if(partials.length){
-                                    var partialName = partials[0];
-                                    if(buildMap[partialName]){
-                                        loadWait(partials.slice(1));
-                                    } else {
-                                        load(partialName, parentRequire, function(_) {loadWait(partials.slice(1));}, config);
-                                    }
+                        (function loadWait(partials){
+                            if(partials.length){
+                                var partialName = partials[0];
+                                if(buildMap[partialName]){
+                                    loadWait(partials.slice(1));
                                 } else {
-                                    onload(buildMap[moduleName]);
+                                    load(partialName, parentRequire, function(_) {loadWait(partials.slice(1));}, config);
                                 }
-                            })(partials);
-                        } else {
-                            onload(buildMap[moduleName]);
-                        }
+                            } else {
+                                onload(buildMap[moduleName]);
+                            }
+                        })(partials);
                     }
                 }, config);
             }
         },
 
-        write: function (pluginName, moduleName, write, config) {
+        write: function writer(pluginName, moduleName, write, config) {
             var source = sourceMap[moduleName],
                 content = source && text.jsEscape(source);
             if (content) {
-                var dependencies = parse(content);
+                sourceMap[moduleName] = null;
+                var dependencies = partialsMap[moduleName];
                 if(dependencies.length){
+                    dependencies.forEach(function(partialName){
+                        writer(pluginName, partialName, write, config);
+                    });
                     var partials = dependencies.map(function(partial) {return '"'+pluginName+'!'+partial+'"';}).join(',');
                     var params = dependencies.map(function(partial) {return partial;}).join(',');
                     var array = dependencies.map(function(partial) {return partial+':'+partial+'.source';}).join(',');
