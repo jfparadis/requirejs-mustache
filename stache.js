@@ -79,7 +79,7 @@ define(['text', 'mustache'], function (text, Mustache) {
                         })(partials);
                     } else {
                         buildMap[moduleName] = function build( view ) {
-                            return Array.isArray(view)? view.map(build): Mustache.render( source, view, sourceMap ); 
+                            return Array.isArray(view)? view.map(build).join('\n'): Mustache.render( source, view, sourceMap ); 
                         };
                         (function loadWait(partials){
                             if(partials.length){
