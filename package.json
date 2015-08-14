@@ -17,9 +17,6 @@
             "web": "http://jeanfrancoisparadis.com/"
         }
     ],
-    "dependencies": {
-        "http://github.com/jfparadis/requirejs-mustache": "master"
-    },
     "bugs": {
         "url": "https://github.com/jfparadis/requirejs-mustache/issues"
     },
